@@ -1,0 +1,45 @@
+{
+    "server_name": "HBlink4 Server",
+    "server_description": "Amateur Radio DMR Network",
+    "dashboard_title": "HBlink4 Dashboard",
+    "announcement": {
+        "enabled": false,
+        "text": ""
+    },
+    "network_info": {
+        "enabled": false,
+        "button_text": "Network Info",
+        "url": "https://example.com/network-info"
+    },
+    "refresh_interval": 1000,
+    "max_events": 50,
+    "event_receiver": {
+        "disable_ipv6": false,
+        "transport": "unix",
+        "host_ipv4": "127.0.0.1",
+        "host_ipv6": "::1",
+        "port": 8765,
+        "unix_socket": "/tmp/hblink4.sock",
+        "buffer_size": 65536
+    },
+    "user_database": {
+        "enabled": true,
+        "source_url": "https://database.radioid.net/static/user.csv",
+        "user_agent": "HBlink4-Dashboard (+https://github.com/n0mjs710/HBlink4; contact=operator@example.org)",
+        "refresh": {
+            "schedule": "daily",
+            "time_of_day": "03:17",
+            "jitter_minutes": 15,
+            "on_startup_if_older_than_hours": 36
+        },
+        "filter": {
+            "countries": ["United States", "Canada"],
+            "callsign_regex": null,
+            "radio_id_ranges": null
+        },
+        "fallback": {
+            "keep_stale_on_failure": true,
+            "min_rows_required": 1000
+        }
+    }
+}
