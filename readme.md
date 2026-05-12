@@ -7,10 +7,6 @@ cd /opt
 git clone https://github.com/Justice57201/HBlink4.git
 cd /opt/HBlink4
 ```
-2. Open the directory.
-```bash
-cd /opt/HBlink4
-```
 
 2. Create a virtual environment and activate it:
 ```bash
