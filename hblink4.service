@@ -1,0 +1,22 @@
+[Unit]
+Description=HBlink4 Full Startup
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/HBlink4
+
+ExecStart=/bin/bash /opt/HBlink4/run_all.sh
+
+Restart=on-failure
+RestartSec=5
+
+# Give it time to start multiple processes
+TimeoutStartSec=30
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
