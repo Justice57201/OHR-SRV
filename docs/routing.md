@@ -1,0 +1,114 @@
+# Call Routing and Forwarding
+
+## Overview
+
+HBlink4 implements configuration-based call routing using timeslot-specific talkgroup lists. This enables precise control over which calls are accepted from repeaters and forwarded to them.
+
+## Configuration Structure
+
+### Repeater Configuration
+
+Each repeater configuration includes slot-specific talkgroup lists that define which TGIDs are allowed on each timeslot:
+
+```json
+{
+    "name": "Example Repeater",
+    "match": {
+        "ids": [312000]
+    },
+    "config": {
+        "enabled": true,
+        "timeout": 30,
+        "passphrase": "passw0rd",
+        "slot1_talkgroups": [8, 9],
+        "slot2_talkgroups": [3120, 3122],
+        "description": "KS-DMR Network Repeater"
+    }
+}
+```
+
+### Routing Rules
+
+The same talkgroup lists control both **inbound** and **outbound** routing (symmetric):
+
+- **slot1_talkgroups**: TGIDs allowed on timeslot 1
+  - Traffic on TS1 FROM this repeater is only processed if TGID is in this list
+  - Traffic on TS1 is only forwarded TO this repeater if TGID is in this list
+  
+- **slot2_talkgroups**: TGIDs allowed on timeslot 2
+  - Traffic on TS2 FROM this repeater is only processed if TGID is in this list
+  - Traffic on TS2 is only forwarded TO this repeater if TGID is in this list
+
+**Symmetric routing ensures bidirectional communication** - if a repeater can send a talkgroup to the network, it can receive that talkgroup from the network.
+
+### Forwarding Assumption
+
+**Forwarding is always enabled** - that's the whole point of HBlink4! If a repeater has a TGID in its slot list, it will both accept traffic on that TS/TGID and receive forwarded traffic for that TS/TGID.
+
+### Default Behavior
+
+If a repeater configuration does not include slot talkgroup lists (empty `[]`):
+- **Both directions**: All talkgroups are accepted and forwarded (no filtering)
+
+This allows new repeaters to participate fully in the network without explicit configuration.
+
+## Assumed Slot State
+
+Since HBlink4 forwards calls to repeaters but doesn't receive real-time feedback about transmission state, we must **assume** the slot state on target repeaters:
+
+### Transmission Assumptions
+
+When we forward a stream to a repeater:
+1. **Assume the slot is now active** - Track this as an "assumed active" stream
+2. **Block the slot for other traffic** - Don't forward other calls to this TS until clear
+3. **Honor hang time** - Keep slot blocked for `stream_hang_time` after stream ends
+4. **Track stream lifecycle** - Monitor for terminators to know when transmission ends
+
+### Slot State Tracking
+
+For each repeater, we track:
+- **Real streams**: Streams originating from this repeater (we receive packets)
+- **Assumed streams**: Streams we're forwarding to this repeater (we send packets)
+
+Both types of streams:
+- Block the slot from other traffic
+- Respect hang time after completion
+- Use terminator detection for immediate end recognition
+- Fall back to timeout if terminator is missed
+
+## Contention Handling
+
+When a call needs to be forwarded:
+
+1. **Check inbound filter**: Does source repeater config allow this TS/TGID?
+   - If no: Drop packet, don't process
+   
+2. **For each potential target repeater**:
+   - Check outbound filter: Does target config include this TS/TGID?
+   - If no: Skip this target
+   
+3. **Check target slot state**:
+   - Is there an active stream (real or assumed) on this slot?
+   - If yes: Check if it's the same call or different
+     - Same call: Forward (continue existing stream)
+     - Different call: Skip (contention - slot busy)
+   
+4. **Check hang time**:
+   - Has this slot recently ended a stream?
+   - If within hang time: Skip (slot cooling down)
+   
+5. **Forward packet**:
+   - Send to target repeater
+   - Create assumed stream state
+   - Track for terminator/timeout
+
+## Interaction with DMRD translation
+
+When a trusted repeater declares DMRD translation rules via RPTO, the translation layer wraps the routing logic above:
+
+- **On ingress**, the packet's `(slot, dst_id)` is translated from the source repeater's local vocabulary to the network vocabulary **before** any of the steps above. Every ACL check, contention check, hang-time decision, and target-selection step in this document operates on network-side values.
+- **On egress**, the per-target `outbound_map` translates network → target-local **after** all routing decisions have been made. The slot-busy check (step 3 above) is performed against the target-local slot the packet will actually occupy on-air, not the network slot.
+
+`slot1_talkgroups` and `slot2_talkgroups` are always interpreted in network vocabulary. A repeater with no translation declared (the common case) sees no behavioral change — translation is a passthrough for untranslated TGIDs.
+
+See [dmrd_translation.md](dmrd_translation.md) for the full grammar and the step-by-step processing order.
