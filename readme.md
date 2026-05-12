@@ -26,7 +26,7 @@ Copy the sample configuration file and modify it for your needs:
 cp config/config_sample.json config/config.json
 ```
 ```bash
-cp dashboard/config/config_sample.json dashboard/config/config.json
+cp dashboard/config_sample.json dashboard/config.json
 ```
 
 See the [Configuration Guide](docs/configuration.md) for complete documentation of all settings.
