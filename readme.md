@@ -3,6 +3,7 @@
 
 1. Clone this repository:
 ```bash
+cd /opt
 git clone https://github.com/Justice57201/HBlink4.git
 cd /opt/HBlink4
 ```
