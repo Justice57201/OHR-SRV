@@ -1,0 +1,173 @@
+{
+    "global": {
+        "max_missed": 3,
+        "timeout_duration": 30,
+        "disable_ipv6": false,
+        "bind_ipv4": "0.0.0.0",
+        "bind_ipv6": "::",
+        "port_ipv4": 62031,
+        "port_ipv6": 62031,
+        "logging": {
+            "file": "logs/hblink.log",
+            "console_level": "INFO",
+            "file_level": "DEBUG",
+            "retention_days": 30
+        },
+        "stats_interval": 60,
+        "report_stats": true,
+        "stream_timeout": 2.0,
+        "stream_hang_time": 10.0,
+        "user_cache": {
+            "timeout": 600
+        }
+    },
+    "connection_type_detection": {
+        "_comment": "Categorize connections for dashboard display (📶 Repeaters, 📱 Hotspots, 🔗 Network Inbound, ❓ Other). Matching is case-insensitive and uses substring matching against package_id (primary) or software_id (fallback).",
+        "hotspot_packages": [
+            "mmdvm_hs", "dvmega", "zumspot", "jumbospot", "nanodv",
+            "openspot", "dmo", "simplex"
+        ],
+        "network_packages": [
+            "hblink", "freedmr", "brandmeister", "xlx", "dmr+", "tgif", "ipsc"
+        ],
+        "repeater_packages": [
+            "repeater", "duplex", "stm32", "unknown"
+        ],
+        "hotspot_software": [
+            "pi-star", "pistar", "ps4", "wpsd"
+        ],
+        "network_software": [
+            "hblink", "freedmr", "brandmeister", "xlx"
+        ]
+    },
+    "dashboard": {
+        "enabled": true,
+        "disable_ipv6": false,
+        "transport": "unix",
+        "host_ipv4": "127.0.0.1",
+        "host_ipv6": "::1",
+        "port": 8765,
+        "unix_socket": "/tmp/hblink4.sock",
+        "buffer_size": 65536
+    },
+    "blacklist": {
+        "patterns": [
+            {
+                "name": "Blocked IDs",
+                "description": "Should never be used",
+                "match": {
+                    "ids": [1, 2]
+                },
+                "reason": "Repeated abuse of network"
+            },
+            {
+                "name": "Blocked Range",
+                "description": "Unauthorized network range",
+                "match": {
+                    "id_ranges": [[315000, 315999]]
+                },
+                "reason": "Unauthorized DMR-MARC range"
+            },
+            {
+                "name": "Blocked Multiple Ranges",
+                "description": "Example of multiple ranges in one pattern",
+                "match": {
+                    "id_ranges": [[100000, 109999], [200000, 209999], [900000, 909999]]
+                },
+                "reason": "Multiple unauthorized network ranges"
+            },
+            {
+                "name": "Blocked Callsigns",
+                "description": "Banned operators",
+                "match": {
+                    "callsigns": ["BADACTOR*", "SPAM*"]
+                },
+                "reason": "Network abuse"
+            }
+        ]
+    },
+    "repeater_configurations": {
+        "patterns": [
+            {
+                "name": "Core Network Repeaters (Trusted)",
+                "description": "Trusted repeaters managed by core team - can use any TG",
+                "match": {
+                    "ids": [312000, 312001]
+                },
+                "config": {
+                    "passphrase": "core-network-key",
+                    "trust": true,
+                    "slot1_talkgroups": [8, 9],
+                    "slot2_talkgroups": [3120, 3121, 3122],
+                    "default_unit_calls": true
+                }
+            },
+            {
+                "name": "Regional Network Repeaters",
+                "description": "Example of multiple ranges in one pattern - regions 310, 311, 312",
+                "match": {
+                    "id_ranges": [[310000, 310999], [311000, 311999], [312000, 312999]]
+                },
+                "config": {
+                    "passphrase": "regional-network-key",
+                    "trust": false,
+                    "slot1_talkgroups": [1, 2, 3, 8],
+                    "slot2_talkgroups": [3100, 3110, 3120]
+                }
+            },
+            {
+                "name": "Club Network",
+                "description": "Multiple specific repeaters for a club network",
+                "match": {
+                    "ids": [312100, 312101, 312102]
+                },
+                "config": {
+                    "passphrase": "club-network-key",
+                    "slot1_talkgroups": [8],
+                    "slot2_talkgroups": [3100, 3101, 3102]
+                }
+            }
+        ],
+        "default": {
+            "passphrase": "passw0rd",
+            "slot1_talkgroups": [8],
+            "slot2_talkgroups": [8]
+        }
+    },
+    "outbound_connections": [
+        {
+            "enabled": true,
+            "name": "Regional-Master-Server",
+            "address": "master.example.com",
+            "port": 62031,
+            "passphrase": "remote-server-password",
+            "radio_id": 312999,
+            "callsign": "K0USY-L",
+            "rx_frequency": 449000000,
+            "tx_frequency": 444000000,
+            "power": 50,
+            "colorcode": 1,
+            "latitude": 38.0,
+            "longitude": -97.0,
+            "height": 100,
+            "location": "Network Link",
+            "description": "Link to regional master",
+            "url": "https://hblink.example.com",
+            "software_id": "HBlink4",
+            "package_id": "HBlink4 v2.0",
+            "options": "TS1=1,2,3,8,9;TS2=3100,3120,3121,9998",
+            "unit_calls_enabled": true
+        },
+        {
+            "enabled": false,
+            "name": "Backup-Server",
+            "address": "backup.example.com",
+            "port": 62031,
+            "passphrase": "backup-password",
+            "radio_id": 312998,
+            "callsign": "K0USY-B",
+            "options": "TS1=*;TS2=*",
+            "description": "Backup connection (disabled)"
+        }
+    ]
+}
