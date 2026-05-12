@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBlink4 Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: #0f172a; 
+            color: #e2e8f0; 
+            padding: 12px;
+        
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        header { 
+            margin-bottom: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .header-branding {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo {
+            height: 72px;
+            width: auto;
+        }
+        
+        h1 { color: #38bdf8; font-size: 32px; }
+        
+        .status-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .audio-toggle {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            border: 2px solid #64748b;
+        }
+        
+        .audio-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .audio-toggle.enabled {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+        
+        .audio-toggle.disabled {
+            background: #374151;
+            color: #9ca3af;
+            border-color: #4b5563;
+        }
+        
+        .network-info-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            background: #0ea5e9;
+            color: #ffffff;
+            border: 1px solid #38bdf8;
+        }
+        
+        .network-info-btn:hover {
+            background: #0284c7;
+            border-color: #0ea5e9;
+            transform: translateY(-1px);
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            border-radius: 12px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #1e293b;
+            z-index: 1;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #38bdf8;
+            font-size: 24px;
+        }
+        
+        .modal-close {
+            background: #374151;
+            border: none;
+            color: #e2e8f0;
+            font-size: 28px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: #4b5563;
+            transform: scale(1.1);
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .modal-section {
+            margin-bottom: 24px;
+        }
+        
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-section h3 {
+            color: #94a3b8;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 12px 0;
+            font-weight: 600;
+        }
+        
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .modal-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .modal-table td:first-child {
+            color: #94a3b8;
+            font-weight: 500;
+            width: 180px;
+        }
+        
+        .modal-table td:last-child {
+            color: #e2e8f0;
+        }
+        
+        .modal-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .modal-highlight {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        
+        .modal-link {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        
+        .modal-link:hover {
+            text-decoration: underline;
+        }
+        
+        .repeater-header {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .repeater-header:hover {
+            background: #1e40af;
+            transform: translateY(-1px);
+        }
+        
+        .repeater-header-warning {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .repeater-header-warning:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        .connection-status {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .connection-status.clickable {
+            cursor: pointer;
+        }
+        
+        .connection-status.clickable:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .connection-status.connected { background: #10b981; color: white; }
+        .connection-status.warning { background: #f59e0b; color: white; }
+        .connection-status.disconnected { 
+            background: #ef4444; 
+            color: white; 
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .announcement-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            border: 2px solid #fbbf24;
+            font-size: 15px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .announcement-banner strong {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: #1e293b;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }        .stat-label { color: #94a3b8; font-size: 12px; margin-bottom: 5px; }
+        .stat-value { color: #e2e8f0; font-size: 24px; font-weight: 600; }
+        
+        .card { 
+            background: #1e293b; 
+            border-radius: 8px; 
+            padding: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+            margin-bottom: 15px;
+        }
+        
+        .card h2 { 
+            color: #94a3b8; 
+            font-size: 16px; 
+            margin-bottom: 12px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .section-header {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 12px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        /* Repeater Card Layout - Compact Version */
+        /* ORIGINAL VALUES FOR REVERT: padding: 2px, margin-bottom: 10px, border-radius: 8px */
+        .repeater-card {
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 1px;
+            margin-bottom: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping when too narrow */
+            justify-content: space-between;
+            align-items: stretch;
+            overflow: hidden; /* Prevent children from overflowing */
+            min-width: 0; /* Allow shrinking */
+        }
+        
+        .repeater-info {
+            flex: 0 0 auto; /* Don't grow, don't shrink, auto width */
+            padding: 6px;
+            min-width: 200px; /* Minimum width before wrapping */
+            max-width: 400px; /* Don't let metadata section get too wide */
+        }
+        
+        .repeater-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: #38bdf8;
+            margin-bottom: 4px;
+        }
+        
+        .repeater-location {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+            .repeater-meta {
+                display: grid;
+                grid-template-columns: 140px auto 1fr;
+                grid-template-rows: auto auto;
+                gap: 2px 10px;
+                font-size: 0.85em;
+                margin-top: 2px;
+            }
+        
+        /* Hide metadata by default on medium/small screens - only show on large or when explicitly stacked */
+        @media (max-width: 1024px) {
+            .repeater-meta {
+                display: none; /* Hide by default when wrapping might occur */
+            }
+        }
+        
+        .repeater-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        
+        .repeater-meta-label {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        .repeater-meta-label.rpto-tgs {
+            color: #60a5fa;
+        }
+
+        .translated-tg {
+            color: #fbbf24;
+            cursor: help;
+        }
+        
+        /* Slot Display */
+        .slots-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px;
+            flex: 0 1 auto; /* Don't grow, allow shrink, auto width */
+            min-width: min-content; /* Shrink to fit content */
+            max-width: 100%; /* Don't exceed container */
+            align-self: flex-end; /* Align to right side */
+            margin-left: auto; /* Push to right */
+        }
+        
+        .slot {
+            background: #0f172a;
+            border-radius: 4px;
+            padding: 6px 10px;
+            border-left: 3px solid #334155;
+            display: grid;
+            grid-template-columns: 55px 70px 75px 110px 55px 70px; /* Fixed optimal widths with padding */
+            gap: 10px;
+            align-items: center;
+            font-size: 12px;
+            min-width: 0; /* Allow grid items to shrink */
+            width: max-content; /* Shrink to fit content */
+        }
+        
+        .slot.idle {
+            border-left-color: #334155;
+        }
+        
+        .slot.receiving {
+            border-left-color: #10b981;
+            background: linear-gradient(90deg, rgba(16,185,129,0.1) 0%, rgba(15,23,42,1) 100%);
+        }
+        
+        .slot.transmitting {
+            border-left-color: #ef4444;
+            background: linear-gradient(90deg, rgba(239,68,68,0.1) 0%, rgba(15,23,42,1) 100%);
+        }
+        
+        .slot.hang_time {
+            border-left-color: #6366f1;
+            background: linear-gradient(90deg, rgba(99,102,241,0.1) 0%, rgba(15,23,42,1) 100%);
+        }
+        
+        .slot-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        
+        .slot-col-label {
+            color: #64748b;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .slot-col-value {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+        
+        .slot-col-value.empty {
+            color: #475569;
+            font-style: italic;
+        }
+        
+        .slot-col-value.highlight {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        
+        .slot-status-badge {
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        
+        .slot-status-badge.idle {
+            background: #334155;
+            color: #94a3b8;
+        }
+        
+        .slot-status-badge.receiving {
+            background: #10b981;
+            color: white;
+        }
+        
+        .slot-status-badge.transmitting {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .slot-status-badge.hang_time {
+            background: #6366f1;
+            color: white;
+        }
+
+        .slot-status-badge.data {
+            background: #fbbf24;   /* gold */
+            color: #1e293b;
+        }
+        
+        .repeater-header-warning {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #fbbf24; /* Yellow warning color */
+        }
+        
+        .slot-talker {
+            color: #94a3b8;
+            font-size: 11px;
+            font-style: italic;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .status { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            text-transform: uppercase;
+        }
+        
+        .status.active { background: #10b981; color: white; }
+        .status.hang { background: #f59e0b; color: white; }
+        .status.connected { background: #3b82f6; color: white; }
+        
+        .event { 
+            padding: 12px; 
+            border-left: 3px solid #3b82f6; 
+            margin-bottom: 8px; 
+            background: #334155; 
+            border-radius: 4px; 
+            font-size: 13px; 
+        }
+        
+        .event .time { 
+            color: #64748b; 
+            font-size: 11px; 
+            margin-bottom: 4px;
+        }
+        
+        .event .type {
+            display: inline-block;
+            background: #475569;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+        
+        .tg-list { 
+            color: #64748b; 
+            font-size: 12px; 
+        }
+        
+        /* Responsive Design for Mobile/Tablet */
+        
+        /* Container query simulation: when slots wrap below repeater info */
+        @media (max-width: 800px) {
+            /* At this width, slots will wrap below - hide metadata */
+            .repeater-card {
+                flex-direction: column; /* Force vertical stacking */
+            }
+            
+            .repeater-info {
+                border-bottom: 2px solid #0f172a;
+                min-width: 100%; /* Full width when stacked */
+            }
+            
+            .slots-container {
+                min-width: 100%; /* Full width when stacked */
+                max-width: 100%;
+                align-self: stretch; /* Take full width */
+                margin-left: 0; /* Reset right alignment */
+            }
+            
+            /* Hide metadata when wrapped, keep only identifier */
+            .repeater-meta {
+                display: none;
+            }
+            
+            .repeater-header {
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+            
+            /* Compact slot display - optimized fixed widths */
+            .slot {
+                grid-template-columns: 50px 65px 70px 100px 50px 65px;
+                gap: 8px;
+                font-size: 12px;
+                width: 100%; /* Take full width on mobile */
+            }
+        }
+        
+        @media (min-width: 801px) and (max-width: 1024px) {
+            /* Tablets: only show metadata when we're in proper vertical stack mode */
+            .repeater-card {
+                flex-direction: column; /* Force vertical stacking */
+            }
+            
+            .repeater-info {
+                border-bottom: 2px solid #0f172a;
+            }
+            
+            .slots-container {
+                min-width: 100%;
+                max-width: 100%;
+                align-self: stretch; /* Take full width */
+                margin-left: 0; /* Reset right alignment */
+            }
+            
+            /* Adjust slot grid for tablets - optimized fixed widths */
+            .slot {
+                grid-template-columns: 52px 68px 72px 105px 52px 68px;
+                gap: 8px;
+                font-size: 12px;
+                width: 100%; /* Take full width on tablet */
+            }
+            
+            /* Show metadata ONLY when forced to column layout (not wrapped) */
+            .repeater-meta {
+                display: grid !important; /* Override the hide rule - safe here because flex-direction: column */
+                grid-template-columns: 1fr 1fr;
+                gap: 8px 12px;
+            }
+        }
+        
+        /* Wide screens: metadata visible side-by-side */
+        @media (min-width: 1025px) {
+            .repeater-meta {
+                display: grid !important; /* Show on wide screens */
+            }
+        }
+        
+        @media (max-width: 600px) {
+            /* Small phones: further compaction */
+            body {
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .logo {
+                height: 48px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 8px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            /* Even more compact slot display - 5 columns */
+            .slot {
+                grid-template-columns: 45px 60px 65px 95px 55px;
+                gap: 6px;
+                font-size: 11px;
+                padding: 6px 8px;
+                width: 100%; /* Take full width */
+            }
+            
+            .slot-col-label {
+                font-size: 9px;
+            }
+            
+            .slot-col-value {
+                font-size: 11px;
+            }
+            
+            .repeater-info {
+                padding: 6px 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Very small phones: ultra-compact, 4 columns (hides columns 3,4) */
+            .slot {
+                grid-template-columns: 42px 58px 62px 55px;
+                gap: 4px;
+                font-size: 10px;
+                padding: 6px;
+                width: 100%; /* Take full width */
+            }
+            
+            /* Hide destination and duration columns on tiny screens */
+            .slot .slot-col:nth-child(3),
+            .slot .slot-col:nth-child(4) {
+                display: none;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                font-size: 14px;
+            }
+        }
+        
+        /* Outbound connection status styles */
+        .status-connected { color: #34d399; font-weight: 600; }
+        .status-warning { color: #fbbf24; font-weight: 600; }
+        .status-error { color: #f87171; font-weight: 600; }
+        .status-disconnected { color: #94a3b8; font-weight: 600; }
+        
+        .outbound-header-connected {
+            font-size: 16px;
+            font-weight: 600;
+            color: #38bdf8;
+            margin-bottom: 4px;
+        }
+        
+        .outbound-header-warning {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #fbbf24;
+        }
+        
+        .outbound-header-disconnected {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #475569;  /* Dark blue/gray for disconnected/connecting */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-branding">
+                <img src="/static/HBlink.png" alt="HBlink" class="logo">
+                <div>
+                    <h1 id="dashboardTitle">HBlink4 Dashboard</h1>
+                    <div style="color: #64748b; font-size: 14px; margin-top: 4px;" id="serverName"></div>
+                </div>
+            </div>
+            <div class="status-badges">
+                <a class="network-info-btn" id="networkInfoBtn" style="display: none;" target="_blank">🌐 Network Info</a>
+                <div class="connection-status clickable warning" id="wsStatus" title="Connecting to dashboard server...">Connecting...</div>
+                <div class="connection-status warning" id="hblinkStatus" title="Waiting for connection status...">Unknown</div>
+                <div class="audio-toggle disabled" id="audioToggle" title="Click to enable audio notifications">🔇 Notifications</div>
+            </div>
+        </header>
+        
+        <!-- Announcement Banner (hidden by default, shown if announcement text exists) -->
+        <div id="announcementBanner" class="announcement-banner" style="display: none;">
+            <strong>📢 Announcement:</strong> <span id="announcementText"></span>
+        </div>
+        
+        <h2 class="section-header">Statistics</h2>
+        <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-label">Connections</div>
+                    <div class="stat-value" id="statConnections">0</div>
+                </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Streams</div>
+                <div class="stat-value" id="statStreams">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Calls Today</div>
+                <div class="stat-value" id="statTotalCalls">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Retransmitted Calls Today</div>
+                <div class="stat-value" id="statRetransmittedCalls">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Traffic Today</div>
+                <div class="stat-value" id="statTotalDuration">0:00:00</div>
+            </div>
+        </div>
+        
+        <!-- Last Heard Users (Last 10) -->
+        <h2 class="section-header" style="margin-top: 20px; margin-bottom: 10px;">
+            Last Heard
+            <span id="userDbStatus" style="font-size: 0.55em; color: #9ca3af; font-weight: 400; margin-left: 10px;"></span>
+        </h2>
+        <div class="card">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                    <thead>
+                        <tr style="background-color: #374151; color: white;">
+                            <th style="padding: 8px; text-align: left;">Radio ID</th>
+                            <th style="padding: 8px; text-align: left;">Callsign/Alias</th>
+                            <th style="padding: 8px; text-align: left;">Source</th>
+                            <th style="padding: 8px; text-align: center;">Slot</th>
+                            <th style="padding: 8px; text-align: left;">Destination</th>
+                            <th style="padding: 8px; text-align: left;">Last Heard</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lastHeardTable">
+                        <tr>
+                            <td colspan="6" style="padding: 20px; text-align: center; color: #9ca3af;">
+                                No users heard yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Repeaters Section -->
+        <div id="repeatersSection" style="display: none;">
+            <h2 class="section-header">📶 Repeaters <span id="repeaterCount" style="color: #38bdf8; font-weight: 700;"></span></h2>
+            <div class="card">
+                <div id="repeatersContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Hotspots Section -->
+        <div id="hotspotsSection" style="display: none;">
+            <h2 class="section-header" style="margin-top: 20px;">📱 Hotspots <span id="hotspotCount" style="color: #38bdf8; font-weight: 700;"></span></h2>
+            <div class="card">
+                <div id="hotspotsContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Network Inbound Section -->
+        <div id="networksSection" style="display: none;">
+            <h2 class="section-header" style="margin-top: 20px;">🔗 Network Inbound <span id="networkCount" style="color: #38bdf8; font-weight: 700;"></span></h2>
+            <div class="card">
+                <div id="networksContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Unknown Connections Section (fallback for unrecognized software) -->
+        <div id="unknownSection" style="display: none;">
+            <h2 class="section-header" style="margin-top: 20px;">❓ Other Connections <span id="unknownCount" style="color: #38bdf8; font-weight: 700;"></span></h2>
+            <div class="card">
+                <div id="unknownContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Network Outbound -->
+        <div id="outboundSection" style="display: none;">
+            <h2 class="section-header" style="margin-top: 20px;">🔗 Network Outbound <span id="outboundCount" style="color: #38bdf8; font-weight: 700;"></span></h2>
+            <div class="card">
+                <div id="outboundsContainer"></div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 15px;">
+            <h2>Recent Events</h2>
+            <div id="eventsLog"></div>
+        </div>
+    </div>
+    
+    <script>
+        let ws = null;
+        let reconnectTimeout = null;
+
+        // Data-call persistence-of-vision (gold DATA pill).
+        // A data call is typically one DMR burst (~60ms) that ends via
+        // fast_terminator ~200ms later — far too brief for the eye to catch.
+        // We hold the DATA pill on the slot for DATA_PERSIST_MS after the
+        // last burst so users can actually see it. Keyed per slot so
+        // back-to-back bursts just refresh the timer.
+        const DATA_PERSIST_MS = 3000;
+        const dataPersistTimers = new Map();  // key: slot identity, value: timeout id
+
+        function dataPersistKey(connectionType, connectionId, slot) {
+            return `${connectionType}:${connectionId}:${slot}`;
+        }
+
+        function clearDataPersist(key) {
+            const tid = dataPersistTimers.get(key);
+            if (tid !== undefined) {
+                clearTimeout(tid);
+                dataPersistTimers.delete(key);
+            }
+        }
+
+        function scheduleDataPersistDrop(key, connectionType, findPredicate) {
+            clearDataPersist(key);
+            const tid = setTimeout(() => {
+                dataPersistTimers.delete(key);
+                // Drop the data stream from local state and re-render.
+                state.streams = state.streams.filter(s => !findPredicate(s));
+                if (connectionType === 'outbound') {
+                    const outboundList = Array.isArray(state.outbounds)
+                        ? state.outbounds : Object.values(state.outbounds || {});
+                    updateOutbounds(outboundList);
+                } else if (state.repeaters) {
+                    updateRepeaters(state.repeaters);
+                }
+            }, DATA_PERSIST_MS);
+            dataPersistTimers.set(key, tid);
+        }
+
+        let state = {
+            repeaters: [],
+            repeater_details: {},  // Detailed info for each repeater
+            outbounds: [],  // Outbound connections
+            streams: [],
+            events: [],
+            last_heard: [],
+            last_heard_stats: {},
+            stats: {
+                total_calls_today: 0,
+                total_duration_today: 0,
+                retransmitted_calls: 0
+            },
+            config: {},
+            user_db_status: null
+        };
+        
+        // Audio notification system
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioEnabled = localStorage.getItem('audioNotifications') === 'true';
+        
+        function updateAudioToggle() {
+            const toggle = document.getElementById('audioToggle');
+            if (audioEnabled) {
+                toggle.className = 'audio-toggle enabled';
+                toggle.textContent = '🔊 Notifications';
+                toggle.title = 'Click to disable audio notifications';
+            } else {
+                toggle.className = 'audio-toggle disabled';
+                toggle.textContent = '🔇 Notifications';
+                toggle.title = 'Click to enable audio notifications';
+            }
+        }
+        
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            localStorage.setItem('audioNotifications', audioEnabled.toString());
+            updateAudioToggle();
+            // Resume audio context if enabling (required by browsers)
+            if (audioEnabled && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+        
+        function playTone(frequency, duration) {
+            if (!audioEnabled) return;
+            
+            // Resume audio context if suspended (required by browsers)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            // Fade in and out to avoid clicks
+            const now = audioContext.currentTime;
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0.3, now + duration - 0.01);
+            gainNode.gain.linearRampToValueAtTime(0, now + duration);
+            
+            oscillator.start(now);
+            oscillator.stop(now + duration);
+        }
+        
+        function playConnectTone() {
+            playTone(880, 0.15);
+        }
+        
+        function playDisconnectTone() {
+            playTone(440, 0.15);
+        }
+        
+        function playAlertTone() {
+            playTone(2475, 0.05);
+        }
+        
+        // Load configuration
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                state.config = config;
+                
+                // Update page title and server name
+                document.title = config.dashboard_title || 'HBlink4 Dashboard';
+                document.getElementById('dashboardTitle').textContent = config.dashboard_title || 'HBlink4 Dashboard';
+                document.getElementById('serverName').textContent = config.server_name || '';
+                
+                // Show announcement banner if enabled and text exists
+                if (config.announcement && config.announcement.enabled && config.announcement.text && config.announcement.text.trim()) {
+                    document.getElementById('announcementText').textContent = config.announcement.text;
+                    document.getElementById('announcementBanner').style.display = 'block';
+                } else {
+                    document.getElementById('announcementBanner').style.display = 'none';
+                }
+                
+                // Configure network info button
+                const networkInfoBtn = document.getElementById('networkInfoBtn');
+                if (config.network_info && config.network_info.enabled && config.network_info.url) {
+                    networkInfoBtn.textContent = config.network_info.button_text || '🌐 Network Info';
+                    networkInfoBtn.href = config.network_info.url;
+                    networkInfoBtn.style.display = 'inline-block';
+                } else {
+                    networkInfoBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Failed to load config:', error);
+            }
+        }
+        
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+            
+            ws.onopen = () => {
+                updateWebSocketStatus(true);
+            };
+            
+            ws.onclose = () => {
+                updateWebSocketStatus(false);
+                // When we lose WebSocket, we also can't know HBlink status
+                updateHBlinkStatus(false);
+                // Reconnect after 3 seconds
+                reconnectTimeout = setTimeout(connectWebSocket, 3000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                // Update UI immediately on error
+                updateWebSocketStatus(false);
+                updateHBlinkStatus(false);
+            };
+            
+            ws.onmessage = (event) => {
+                // Ignore plain-text keepalive responses from server
+                if (event.data === 'pong') return;
+
+                let data;
+                try {
+                    data = JSON.parse(event.data);
+                } catch (e) {
+                    console.warn('Received non-JSON WebSocket message:', event.data);
+                    return;
+                }
+                
+                if (data.type === 'initial_state') {
+                    state.repeaters = data.data.repeaters;
+                    state.outbounds = data.data.outbounds || [];
+                    state.streams = data.data.streams;
+                    state.events = data.data.events;
+                    state.stats = data.data.stats;
+                    state.last_heard = data.data.last_heard || [];
+                    state.user_db_status = data.data.user_db_status || null;
+
+                    // Update HBlink connection status
+                    updateHBlinkStatus(data.data.hblink_connected || false);
+
+                    updateRepeaters(state.repeaters);
+                    updateOutbounds(state.outbounds);
+                    updateStreams(state.streams);
+                    updateEvents(state.events);
+                    updateStats(state.stats, state.repeaters, state.streams);
+                    updateLastHeard(state.last_heard);
+                    updateUserDbStatus(state.user_db_status);
+                } else if (data.type === 'hblink_status') {
+                    // HBlink4 connection status changed
+                    updateHBlinkStatus(data.data.connected);
+                } else if (data.type === 'stats_reset') {
+                    // Midnight reset - update stats immediately
+                    state.stats = data.data;
+                    updateStats(state.stats, state.repeaters, state.streams);
+                } else if (data.type === 'user_db_status') {
+                    // User database refresh completed (success or failure)
+                    state.user_db_status = data.data;
+                    updateUserDbStatus(state.user_db_status);
+                } else {
+                    // Process event immediately for real-time updates
+                    processEventUpdate(data);
+                    handleEvent(data);
+                }
+            };
+        }
+        
+        function formatDuration(seconds) {
+            if (seconds >= 31536000) {  // 365 days
+                const years = Math.floor(seconds / 31536000);
+                const days = Math.floor((seconds % 31536000) / 86400);
+                return `${years}y ${days}d`;
+            } else if (seconds >= 86400) {  // 24 hours
+                const days = Math.floor(seconds / 86400);
+                const hours = Math.floor((seconds % 86400) / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                return `${days}d ${hours}:${minutes.toString().padStart(2, '0')}`;
+            } else {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        async function showRepeaterDetails(repeaterId) {
+            try {
+                // Fetch detailed stats from API
+                const response = await fetch(`/api/repeater/${repeaterId}`);
+                if (!response.ok) {
+                    console.error('Failed to fetch repeater details');
+                    return;
+                }
+                const details = await response.json();
+                
+                // Create modal
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.onclick = (e) => {
+                    if (e.target === modal) modal.remove();
+                };
+                
+                // Select icon based on connection type
+                const connectionIcons = {
+                    'repeater': '📶',
+                    'hotspot': '📱',
+                    'network': '🔗',
+                    'unknown': '❓'
+                };
+                const icon = connectionIcons[details.connection_type] || '📶';
+                
+                modal.innerHTML = `
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header">
+                            <h2>${icon} ${details.callsign} (${details.repeater_id})</h2>
+                            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="modal-section">
+                                <h3>🔐 Access Control</h3>
+                                <table class="modal-table">
+                                    <tr>
+                                        <td>Connection Category:</td>
+                                        <td class="modal-highlight">${details.access_control.connection_category}</td>
+                                    </tr>
+                                    ${details.access_control.category_description ? `
+                                    <tr>
+                                        <td>Category Description:</td>
+                                        <td>${details.access_control.category_description}</td>
+                                    </tr>
+                                    ` : ''}
+                                    <tr>
+                                        <td>TG Source:</td>
+                                        <td>${details.access_control.talkgroups_source}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>RPTO Received:</td>
+                                        <td>${details.access_control.rpto_received ? '✓ Yes' : '✗ No'}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="modal-section">
+                                <h3>📡 Connection</h3>
+                                <table class="modal-table">
+                                    <tr>
+                                        <td>Address:</td>
+                                        <td>${details.connection.address}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Uptime:</td>
+                                        <td>${formatDuration(details.connection.uptime_seconds)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status:</td>
+                                        <td class="modal-highlight">${details.connection.status}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Missed Pings:</td>
+                                        <td ${details.connection.missed_pings > 0 ? 'style="color: #fbbf24;"' : ''}>${details.connection.missed_pings}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="modal-section">
+                                <h3>📍 Location</h3>
+                                <table class="modal-table">
+                                    <tr>
+                                        <td>Location:</td>
+                                        <td>${details.location.location || 'Not specified'}</td>
+                                    </tr>
+                                    ${details.location.latitude && details.location.longitude ? `
+                                    <tr>
+                                        <td>Coordinates:</td>
+                                        <td>${details.location.latitude}, ${details.location.longitude}</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.location.height ? `
+                                    <tr>
+                                        <td>Height:</td>
+                                        <td>${details.location.height}m</td>
+                                    </tr>
+                                    ` : ''}
+                                </table>
+                            </div>
+                            
+                            <div class="modal-section">
+                                <h3>📻 Frequencies & Settings</h3>
+                                <table class="modal-table">
+                                    ${details.frequencies.rx_freq ? `
+                                    <tr>
+                                        <td>RX Frequency:</td>
+                                        <td>${(parseFloat(details.frequencies.rx_freq) / 1000000).toFixed(4)} MHz</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.frequencies.tx_freq ? `
+                                    <tr>
+                                        <td>TX Frequency:</td>
+                                        <td>${(parseFloat(details.frequencies.tx_freq) / 1000000).toFixed(4)} MHz</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.frequencies.tx_power ? `
+                                    <tr>
+                                        <td>TX Power:</td>
+                                        <td>${details.frequencies.tx_power}W</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.frequencies.colorcode ? `
+                                    <tr>
+                                        <td>Color Code:</td>
+                                        <td>${details.frequencies.colorcode}</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.frequencies.slots ? `
+                                    <tr>
+                                        <td>Slots:</td>
+                                        <td>${details.frequencies.slots}</td>
+                                    </tr>
+                                    ` : ''}
+                                </table>
+                            </div>
+                            
+                            <div class="modal-section">
+                                <h3>📢 Talkgroups</h3>
+                                <table class="modal-table">
+                                    <tr>
+                                        <td>Timeslot 1:</td>
+                                        <td>${
+                                            details.access_control.slot1_talkgroups === null
+                                                ? 'All TGs Allowed' 
+                                                : Array.isArray(details.access_control.slot1_talkgroups) && details.access_control.slot1_talkgroups.length === 0
+                                                    ? 'All TGs Denied'
+                                                    : Array.isArray(details.access_control.slot1_talkgroups) && details.access_control.slot1_talkgroups.length > 0
+                                                        ? details.access_control.slot1_talkgroups.join(', ')
+                                                        : '<span style="color: #6b7280;">Unknown</span>'
+                                        }</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Timeslot 2:</td>
+                                        <td>${
+                                            details.access_control.slot2_talkgroups === null
+                                                ? 'All TGs Allowed' 
+                                                : Array.isArray(details.access_control.slot2_talkgroups) && details.access_control.slot2_talkgroups.length === 0
+                                                    ? 'All TGs Denied'
+                                                    : Array.isArray(details.access_control.slot2_talkgroups) && details.access_control.slot2_talkgroups.length > 0
+                                                        ? details.access_control.slot2_talkgroups.join(', ')
+                                                        : '<span style="color: #6b7280;">Unknown</span>'
+                                        }</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="modal-section">
+                                <h3>ℹ️ Metadata</h3>
+                                <table class="modal-table">
+                                    <tr>
+                                        <td>Software ID:</td>
+                                        <td>${details.metadata.software_id || '<span style="color: #6b7280;">Not reported</span>'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Connection Type:</td>
+                                        <td class="modal-highlight">${details.connection_type || 'unknown'}</td>
+                                    </tr>
+                                    ${details.metadata.package_id ? `
+                                    <tr>
+                                        <td>Package ID:</td>
+                                        <td>${details.metadata.package_id}</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.metadata.description ? `
+                                    <tr>
+                                        <td>Description:</td>
+                                        <td>${details.metadata.description}</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${details.metadata.url ? `
+                                    <tr>
+                                        <td>URL:</td>
+                                        <td><a href="${details.metadata.url}" class="modal-link" target="_blank">${details.metadata.url}</a></td>
+                                    </tr>
+                                    ` : ''}
+                                </table>
+                            </div>
+                            
+                            <div class="modal-section">
+                                <h3>📊 Statistics (Today)</h3>
+                                <table class="modal-table">
+                                    <tr>
+                                        <td>Total Streams:</td>
+                                        <td>${details.statistics.total_streams_today}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Slot 1 Active:</td>
+                                        <td>${details.statistics.slot1_active ? '✓ Yes' : '✗ No'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Slot 2 Active:</td>
+                                        <td>${details.statistics.slot2_active ? '✓ Yes' : '✗ No'}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Error showing repeater details:', error);
+                alert('Failed to load repeater details. Please try again.');
+            }
+        }
+        
+        function updateWebSocketStatus(connected) {
+            const el = document.getElementById('wsStatus');
+            
+            if (connected) {
+                el.textContent = '✓ Live Data';
+                el.className = 'connection-status clickable connected';
+                el.title = 'Live Data: Browser connected to the dashboard providing real-time updates - Click to reload';
+            } else {
+                el.textContent = '🔄 Click to Reconnect';
+                el.className = 'connection-status clickable disconnected';
+                el.title = 'Live Data: Browser disconnected from dashboard server - Click to reconnect';
+            }
+        }
+        
+        function updateHBlinkStatus(connected) {
+            const el = document.getElementById('hblinkStatus');
+            
+            if (connected) {
+                el.textContent = '✓ DMR Server';
+                el.className = 'connection-status connected';
+                el.title = 'DMR Server: Dashboard is connected to the DMR server';
+            } else {
+                el.textContent = '✗ DMR Server';
+                el.className = 'connection-status warning';
+                el.title = 'DMR Server: Dashboard is not connected to the DMR server';
+                
+                // Clear stale data from display
+                state.repeaters = {};
+                state.streams = [];
+                
+                // Clear repeaters display
+                const repeatersList = document.getElementById('repeatersList');
+                if (repeatersList) {
+                    repeatersList.innerHTML = '<div style="color: #94a3b8; padding: 20px; text-align: center;">Dashboard not connected to HBlink4</div>';
+                }
+                
+                // Clear events display
+                const eventsList = document.getElementById('eventsList');
+                if (eventsList) {
+                    eventsList.innerHTML = '<div class="event-item">Waiting for HBlink4 connection...</div>';
+                }
+                
+                // Clear last heard display
+                const lastHeardList = document.getElementById('lastHeardList');
+                if (lastHeardList) {
+                    lastHeardList.innerHTML = '<div style="color: #94a3b8; padding: 10px; text-align: center;">No data</div>';
+                }
+                
+                // Reset stats to zero
+                document.getElementById('statConnections').textContent = '0';
+                document.getElementById('statStreams').textContent = '0';
+            }
+        }
+        
+        function updateStats(stats, repeaters, streams) {
+            // Count connected inbound repeaters
+            const inboundCount = Array.isArray(repeaters) ? repeaters.filter(r => r.status === 'connected').length : 
+                (repeaters ? Object.keys(repeaters).length : 0);
+            // Count connected outbound connections
+            const outboundList = Array.isArray(state.outbounds) ? state.outbounds : Object.values(state.outbounds || {});
+            const outboundCount = outboundList.filter(o => o.status === 'connected').length;
+            document.getElementById('statConnections').textContent = inboundCount + outboundCount;
+            document.getElementById('statStreams').textContent = 
+                Array.isArray(streams) ? streams.filter(s => s.status === 'active').length :
+                (streams ? Object.keys(streams).length : 0);
+            document.getElementById('statTotalCalls').textContent = 
+                (stats.total_calls_today || 0).toLocaleString();
+            document.getElementById('statRetransmittedCalls').textContent = 
+                (stats.retransmitted_calls || 0).toLocaleString();
+            document.getElementById('statTotalDuration').textContent = 
+                formatDuration(stats.total_duration_today || 0);
+        }
+        
+        function updateRepeaters(repeaters) {
+            // Accept either an array or an object map for repeaters
+            const repeaterList = Array.isArray(repeaters) ? repeaters : Object.values(repeaters || {});
+            const connected = repeaterList.filter(r => r.status === 'connected');
+            
+            // Group by connection_type
+            const groups = {
+                repeater: connected.filter(r => r.connection_type === 'repeater'),
+                hotspot: connected.filter(r => r.connection_type === 'hotspot'),
+                network: connected.filter(r => r.connection_type === 'network'),
+                unknown: connected.filter(r => !r.connection_type || r.connection_type === 'unknown')
+            };
+            
+            // Update total count in stats (inbound + connected outbound)
+            const outboundList = Array.isArray(state.outbounds) ? state.outbounds : Object.values(state.outbounds || {});
+            const outboundConnected = outboundList.filter(o => o.status === 'connected').length;
+            document.getElementById('statConnections').textContent = connected.length + outboundConnected;
+            
+            // Render each section
+            renderConnectionGroup('repeaters', 'repeaterCount', groups.repeater, '📶');
+            renderConnectionGroup('hotspots', 'hotspotCount', groups.hotspot, '📱');
+            renderConnectionGroup('networks', 'networkCount', groups.network, '🔗');
+            renderConnectionGroup('unknown', 'unknownCount', groups.unknown, '❓');
+        }
+        
+        // Build per-RF-slot display arrays from net-side subscription + translations.
+        // Subscriptions and translations on the wire are in network vocabulary; the
+        // card shows the RF-side (what the radio user sees). Each TGID in the result
+        // has {tgid, translated, title}: translated TGs are colored gold and carry a
+        // hover tooltip pointing back to the net-side value.
+        function rfTgLists(netSlot1, netSlot2, translations) {
+            const netToRf = new Map();
+            (translations || []).forEach(t => {
+                // [rf_slot, rf_tgid, net_slot, net_tgid]
+                netToRf.set(`${t[2]}.${t[3]}`, { rf_slot: t[0], rf_tgid: t[1] });
+            });
+            const rf1 = [], rf2 = [];
+            function bucket(netSlot, tgs) {
+                if (!Array.isArray(tgs)) return;
+                tgs.forEach(tg => {
+                    const xlate = netToRf.get(`${netSlot}.${tg}`);
+                    if (xlate) {
+                        const entry = {
+                            tgid: xlate.rf_tgid,
+                            translated: true,
+                            title: `Net TS${netSlot}/TG${tg}`
+                        };
+                        (xlate.rf_slot === 1 ? rf1 : rf2).push(entry);
+                    } else {
+                        const entry = { tgid: tg, translated: false, title: '' };
+                        (netSlot === 1 ? rf1 : rf2).push(entry);
+                    }
+                });
+            }
+            bucket(1, netSlot1);
+            bucket(2, netSlot2);
+            return { rf1, rf2 };
+        }
+
+        function renderTgChips(entries) {
+            return entries.map(e => e.translated
+                ? `<span class="translated-tg" title="${e.title}">${e.tgid}</span>`
+                : `${e.tgid}`
+            ).join(', ');
+        }
+
+        function renderConnectionGroup(sectionName, countId, connections, icon) {
+            const section = document.getElementById(`${sectionName}Section`);
+            const container = document.getElementById(`${sectionName}Container`);
+            const countElement = document.getElementById(countId);
+            
+            // Show/hide section based on whether there are connections
+            if (connections.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            if (countElement) {
+                countElement.textContent = `(${connections.length})`;
+            }
+            
+            // Get streams data to show on slots
+            const streams = state.streams || [];
+            
+            container.innerHTML = connections.map(r => {
+                // Find active streams for this repeater (only active or hang_time, not ended)
+                const slot1Stream = streams.find(s => 
+                    s.repeater_id == r.repeater_id && 
+                    s.slot == 1 && 
+                    (s.status === 'active' || s.status === 'hang_time')
+                );
+                const slot2Stream = streams.find(s => 
+                    s.repeater_id == r.repeater_id && 
+                    s.slot == 2 && 
+                    (s.status === 'active' || s.status === 'hang_time')
+                );
+                
+                // Calculate initial connection duration
+                const connectedDuration = r.connected_at ? formatDuration(Date.now() / 1000 - r.connected_at) : '—';
+                const hasMissedPings = r.missed_pings > 0;
+                const headerClass = hasMissedPings ? 'repeater-header-warning' : 'repeater-header';
+                const hasTranslations = Array.isArray(r.translations) && r.translations.length > 0;
+                const xlateTitle = hasTranslations ? `${r.translations.length} translation rule(s) active — translated TGs are shown in gold` : '';
+                const xlateBadge = hasTranslations ? `<span title="${xlateTitle}">🔀</span> ` : '';
+                const { rf1, rf2 } = rfTgLists(r.slot1_talkgroups, r.slot2_talkgroups, r.translations);
+
+                return `
+                    <div class="repeater-card" data-repeater-id="${r.repeater_id}">
+                        <div class="repeater-info">
+                            <div class="${headerClass}" onclick="showRepeaterDetails(${r.repeater_id})" title="Click for detailed information">
+                                ${icon} ${xlateBadge}${r.callsign || 'Unknown'} (${r.repeater_id})
+                            </div>
+                            <div class="repeater-meta">
+                                <!-- Row 1: Location / TX / TS1 -->
+                                <div class="repeater-meta-item">
+                                    ${r.location || 'Location unknown'}
+                                </div>
+                                ${r.tx_freq ? `
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">TX:</span>
+                                    <span>${(parseFloat(r.tx_freq) / 1000000).toFixed(4).padStart(8, '0')} MHz</span>
+                                </div>
+                                ` : '<div></div>'}
+                                ${r.slot1_talkgroups === null ? `
+                                <div class="repeater-meta-item" title="All talkgroups allowed (no configuration)">
+                                    <span class="repeater-meta-label">TS1 TGs:</span>
+                                    <span>All</span>
+                                </div>
+                                ` : Array.isArray(r.slot1_talkgroups) && r.slot1_talkgroups.length === 0 && rf1.length === 0 ? `
+                                <div class="repeater-meta-item" title="All talkgroups denied (empty configuration)">
+                                    <span class="repeater-meta-label">TS1 TGs:</span>
+                                    <span>None</span>
+                                </div>
+                                ` : rf1.length > 0 ? `
+                                <div class="repeater-meta-item" ${r.rpto_received ? 'title="TGs supplied by repeater via RPTO"' : ''}>
+                                    <span class="repeater-meta-label ${r.rpto_received ? 'rpto-tgs' : ''}">TS1 TGs:</span>
+                                    <span>${renderTgChips(rf1)}</span>
+                                </div>
+                                ` : `
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">TS1 TGs:</span>
+                                    <span>None</span>
+                                </div>
+                                `}
+
+                                <!-- Row 2: Connected / RX / TS2 -->
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">Connected:</span>
+                                    <span data-connected-duration data-connected-at="${r.connected_at || ''}">${connectedDuration}</span>
+                                </div>
+                                ${r.rx_freq ? `
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">RX:</span>
+                                    <span>${(parseFloat(r.rx_freq) / 1000000).toFixed(4).padStart(8, '0')} MHz</span>
+                                </div>
+                                ` : '<div></div>'}
+                                ${r.slot2_talkgroups === null ? `
+                                <div class="repeater-meta-item" title="All talkgroups allowed (no configuration)">
+                                    <span class="repeater-meta-label">TS2 TGs:</span>
+                                    <span>All</span>
+                                </div>
+                                ` : Array.isArray(r.slot2_talkgroups) && r.slot2_talkgroups.length === 0 && rf2.length === 0 ? `
+                                <div class="repeater-meta-item" title="All talkgroups denied (empty configuration)">
+                                    <span class="repeater-meta-label">TS2 TGs:</span>
+                                    <span>None</span>
+                                </div>
+                                ` : rf2.length > 0 ? `
+                                <div class="repeater-meta-item" ${r.rpto_received ? 'title="TGs supplied by repeater via RPTO"' : ''}>
+                                    <span class="repeater-meta-label ${r.rpto_received ? 'rpto-tgs' : ''}">TS2 TGs:</span>
+                                    <span>${renderTgChips(rf2)}</span>
+                                </div>
+                                ` : `
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">TS2 TGs:</span>
+                                    <span>None</span>
+                                </div>
+                                `}
+                            </div>
+                        </div>
+                        
+                        <div class="slots-container">
+                            ${renderSlot(1, slot1Stream)}
+                            ${renderSlot(2, slot2Stream)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderSlot(slotNum, stream) {
+            // Determine status and direction
+            let status = 'idle';
+            let statusLabel = 'IDLE';
+
+            if (stream) {
+                // Check if this is a TX (forwarded) stream or RX (received) stream
+                if (stream.is_assumed) {
+                    status = 'transmitting';
+                    statusLabel = '⬆️ TX';
+                } else {
+                    status = 'receiving';
+                    statusLabel = '⬇️ RX';
+                }
+
+                if (stream.status === 'hang_time') {
+                    status = 'hang_time';
+                    statusLabel = 'HANG';
+                }
+
+                // Data calls override the RX/HANG pill with a gold DATA pill.
+                // Server stream state ends ~200ms after a single burst; the
+                // 3s persistence-of-vision hold is enforced client-side via
+                // DATA_PERSIST_MS in the stream_start handler.
+                if (stream.is_data) {
+                    status = 'data';
+                    statusLabel = 'DATA';
+                }
+            }
+
+            // Compose a human Type label from the two wire dimensions:
+            //   call_type  ('group' | 'private')      — addressing
+            //   is_data    (bool, payload kind)       — voice vs data
+            function formatCallType(s) {
+                if (!s) return '—';
+                const addr = s.call_type === 'private' ? 'Private' : 'Group';
+                const kind = s.is_data ? 'Data' : 'Voice';
+                return `${addr} ${kind}`;
+            }
+
+            // Special rendering for hang time: show only TG and call type
+            if (status === 'hang_time') {
+                const destination = stream?.dst_id || '—';
+                const callType = formatCallType(stream);
+                
+                return `
+                    <div class="slot ${status}">
+                        <div class="slot-col">
+                            <div class="slot-col-label">Slot ${slotNum}</div>
+                            <div class="slot-status-badge ${status}">${statusLabel}</div>
+                        </div>
+                        <div class="slot-col">
+                            <div class="slot-col-label">Source</div>
+                            <div class="slot-col-value empty">—</div>
+                        </div>
+                        <div class="slot-col">
+                            <div class="slot-col-label">Destination</div>
+                            <div class="slot-col-value highlight">${destination}</div>
+                        </div>
+                        <div class="slot-col">
+                            <div class="slot-col-label">Type</div>
+                            <div class="slot-col-value">${callType}</div>
+                        </div>
+                        <div class="slot-col">
+                            <div class="slot-col-label">Duration</div>
+                            <div class="slot-col-value empty">—</div>
+                        </div>
+                        <div class="slot-col">
+                            <div class="slot-col-label">Callsign</div>
+                            <div class="slot-col-value empty">—</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Prepare field values
+            const source = stream?.src_id || '—';
+            const destination = stream?.dst_id || '—';
+            const callType = formatCallType(stream);
+            
+            // Calculate real-time duration for active streams
+            let duration = '—';
+            if (stream) {
+                if (stream.status === 'active' && stream.start_time) {
+                    // For active streams, calculate elapsed time from start_time
+                    const elapsed = Date.now() / 1000 - stream.start_time;
+                    // Only show if elapsed time is reasonable (not negative, not more than 1 hour)
+                    if (elapsed >= 0 && elapsed < 3600) {
+                        duration = Math.round(elapsed) + 's';
+                    } else {
+                        duration = '0s';  // Reset if time is invalid
+                    }
+                } else if (stream.duration !== undefined) {
+                    // For ended/hang_time streams, use the final duration
+                    duration = Math.round(stream.duration) + 's';
+                }
+            }
+            
+            const packets = stream?.packets || 0;
+            
+            // Get callsign directly from stream data (looked up by server)
+            const callsign = stream?.callsign || '—';
+            
+            return `
+                <div class="slot ${status}">
+                    <div class="slot-col">
+                        <div class="slot-col-label">Slot ${slotNum}</div>
+                        <div class="slot-status-badge ${status}">${statusLabel}</div>
+                    </div>
+                    <div class="slot-col">
+                        <div class="slot-col-label">Source</div>
+                        <div class="slot-col-value ${stream ? 'highlight' : 'empty'}">${source}</div>
+                    </div>
+                    <div class="slot-col">
+                        <div class="slot-col-label">Destination</div>
+                        <div class="slot-col-value ${stream ? 'highlight' : 'empty'}">${destination}</div>
+                    </div>
+                    <div class="slot-col">
+                        <div class="slot-col-label">Type</div>
+                        <div class="slot-col-value ${stream ? '' : 'empty'}">${callType}</div>
+                    </div>
+                    <div class="slot-col">
+                        <div class="slot-col-label">Duration</div>
+                        <div class="slot-col-value ${stream ? '' : 'empty'}" 
+                             data-stream-duration 
+                             data-start-time="${stream?.start_time || ''}" 
+                             data-status="${stream?.status || ''}" 
+                             data-final-duration="${stream?.duration || ''}">${duration}</div>
+                    </div>
+                    <div class="slot-col">
+                        <div class="slot-col-label">Callsign</div>
+                        <div class="slot-col-value ${stream && callsign !== '—' ? '' : 'empty'}">${callsign}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateOutbounds(outbounds) {
+            const container = document.getElementById('outboundsContainer');
+            const countElement = document.getElementById('outboundCount');
+            const outboundSection = document.getElementById('outboundSection');
+            
+            // outbounds is always an array in state
+            const outboundList = outbounds || [];
+            
+            // Hide entire section if no outbound connections configured
+            if (outboundList.length === 0) {
+                if (outboundSection) {
+                    outboundSection.style.display = 'none';
+                }
+                return;
+            }
+            
+            // Show section if there are outbound connections
+            if (outboundSection) {
+                outboundSection.style.display = 'block';
+            }
+            
+            // Update the count in the header
+            const connectedCount = outboundList.filter(o => o.status === 'connected').length;
+            if (countElement) {
+                countElement.textContent = connectedCount > 0 ? `(${connectedCount})` : '';
+            }
+            
+            // Get streams data to show on slots
+            const streams = state.streams || [];
+
+            container.innerHTML = outboundList.map(o => {
+                // Color coding per design doc - same as repeater headers (colored text, no background)
+                // - Cyan text: Connected and healthy
+                // - Yellow text: Connected but missed ACKs
+                // - Dark gray text: Disconnected or connecting
+                
+                let headerClass = 'outbound-header-connected';
+                
+                if (o.status === 'connected') {
+                    if (o.missed_acks > 0) {
+                        headerClass = 'outbound-header-warning';  // Yellow text for missed ACKs
+                    } else {
+                        headerClass = 'outbound-header-connected';  // Cyan text
+                    }
+                } else if (o.status === 'connecting' || o.status === 'disconnected') {
+                    headerClass = 'outbound-header-disconnected';  // Dark gray text
+                }
+                
+                const connectedDuration = (o.status === 'connected' && o.connected_at) ? 
+                    formatDuration(Date.now() / 1000 - o.connected_at) : '—';
+                
+                // Status text for the first row
+                let statusText = '';
+                if (o.status === 'connecting') {
+                    statusText = 'Connecting...';
+                } else if (o.status === 'disconnected' && o.disconnect_reason) {
+                    statusText = o.disconnect_reason;
+                } else if (o.status === 'error' && o.error_message) {
+                    statusText = o.error_message;
+                } else if (o.status === 'connected') {
+                    statusText = `${o.remote_address}:${o.remote_port}`;
+                } else {
+                    statusText = `${o.remote_address}:${o.remote_port}`;
+                }
+                
+                // Find active streams for this outbound connection (by connection_name.slot key)
+                const slot1Stream = streams.find(s => 
+                    (s.connection_type === 'outbound' || (s.connection_name && s.connection_name === o.connection_name)) &&
+                    s.connection_name === o.connection_name && 
+                    Number(s.slot) === 1 && 
+                    (s.status === 'active' || s.status === 'hang_time')
+                ) || null;
+                const slot2Stream = streams.find(s => 
+                    (s.connection_type === 'outbound' || (s.connection_name && s.connection_name === o.connection_name)) &&
+                    s.connection_name === o.connection_name && 
+                    Number(s.slot) === 2 && 
+                    (s.status === 'active' || s.status === 'hang_time')
+                ) || null;
+                
+                return `
+                    <div class="repeater-card" data-outbound-name="${o.connection_name}">
+                        <div class="repeater-info">
+                            <div class="${headerClass}">
+                                🔗 ${o.connection_name} (${o.radio_id})
+                            </div>
+                            <div class="repeater-meta">
+                                <!-- Row 1: Status/Server / (empty) / TS1 -->
+                                <div class="repeater-meta-item" ${o.status === 'error' ? 'style="color: #f87171;"' : ''}>
+                                    ${statusText}
+                                </div>
+                                <div></div>
+                                ${o.slot1_talkgroups === null ? `
+                                <div class="repeater-meta-item" title="All talkgroups allowed">
+                                    <span class="repeater-meta-label">TS1 TGs:</span>
+                                    <span>All</span>
+                                </div>
+                                ` : Array.isArray(o.slot1_talkgroups) && o.slot1_talkgroups.length === 0 ? `
+                                <div class="repeater-meta-item" title="All talkgroups denied">
+                                    <span class="repeater-meta-label">TS1 TGs:</span>
+                                    <span>None</span>
+                                </div>
+                                ` : Array.isArray(o.slot1_talkgroups) && o.slot1_talkgroups.length > 0 ? `
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">TS1 TGs:</span>
+                                    <span>${o.slot1_talkgroups.join(', ')}</span>
+                                </div>
+                                ` : '<div></div>'}
+                                
+                                <!-- Row 2: Connected / (empty) / TS2 -->
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">Connected:</span>
+                                    <span data-connected-duration data-connected-at="${o.connected_at || ''}">${connectedDuration}</span>
+                                </div>
+                                <div></div>
+                                ${o.slot2_talkgroups === null ? `
+                                <div class="repeater-meta-item" title="All talkgroups allowed">
+                                    <span class="repeater-meta-label">TS2 TGs:</span>
+                                    <span>All</span>
+                                </div>
+                                ` : Array.isArray(o.slot2_talkgroups) && o.slot2_talkgroups.length === 0 ? `
+                                <div class="repeater-meta-item" title="All talkgroups denied">
+                                    <span class="repeater-meta-label">TS2 TGs:</span>
+                                    <span>None</span>
+                                </div>
+                                ` : Array.isArray(o.slot2_talkgroups) && o.slot2_talkgroups.length > 0 ? `
+                                <div class="repeater-meta-item">
+                                    <span class="repeater-meta-label">TS2 TGs:</span>
+                                    <span>${o.slot2_talkgroups.join(', ')}</span>
+                                </div>
+                                ` : '<div></div>'}
+                            </div>
+                        </div>
+                        
+                        <div class="slots-container">
+                            ${renderSlot(1, slot1Stream)}
+                            ${renderSlot(2, slot2Stream)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateStreams(streams) {
+            // Streams are now displayed inline with repeaters
+            // Just trigger a repeater update to refresh the display
+            state.streams = Array.isArray(streams) ? streams : [];
+            if (state.repeaters) {
+                updateRepeaters(state.repeaters);
+            }
+            if (state.outbounds) {
+                const outboundList = Array.isArray(state.outbounds) ? state.outbounds : Object.values(state.outbounds || {});
+                updateOutbounds(outboundList);
+            }
+        }
+        
+        function updateEvents(events) {
+            const log = document.getElementById('eventsLog');
+            
+            if (events.length === 0) {
+                log.innerHTML = '<div class="empty-state">No events yet</div>';
+                return;
+            }
+            
+            log.innerHTML = events.slice(-20).reverse().map(e => {
+                const time = new Date(e.timestamp * 1000).toLocaleTimeString();
+                const dataStr = formatEventData(e.type, e.data);
+                return `
+                    <div class="event">
+                        <div class="time">${time}</div>
+                        <span class="type">${e.type}</span>
+                        <span>${dataStr}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateUserDbStatus(status) {
+            const el = document.getElementById('userDbStatus');
+            if (!el) return;
+            if (!status) { el.textContent = ''; el.title = ''; return; }
+
+            const rows = status.loaded_rows || 0;
+            const ts = status.refresh_timestamp || 0;
+            const srcStatus = status.source_status || 'unknown';
+
+            let ageStr;
+            if (!ts) {
+                ageStr = 'never refreshed';
+            } else {
+                const elapsed = Math.floor(Date.now() / 1000 - ts);
+                if (elapsed < 60) ageStr = `${elapsed}s ago`;
+                else if (elapsed < 3600) ageStr = `${Math.floor(elapsed / 60)}m ago`;
+                else if (elapsed < 86400) ageStr = `${Math.floor(elapsed / 3600)}h ago`;
+                else ageStr = `${Math.floor(elapsed / 86400)}d ago`;
+            }
+
+            let color = '#9ca3af';
+            if (srcStatus === 'error') color = '#fbbf24';            // gold, matches other warnings
+            else if (srcStatus === 'not_modified' || srcStatus === 'ok') color = '#9ca3af';
+
+            el.style.color = color;
+            el.textContent = `Callsign DB: ${rows.toLocaleString()} entries, updated ${ageStr}`;
+
+            // Verbose hover so operators can diagnose without digging into logs.
+            const parts = [
+                `Source: ${status.source_url || '(unset)'}`,
+                `Status: ${srcStatus}`,
+                `Rows: ${rows.toLocaleString()}`
+            ];
+            if (status.last_modified_header) parts.push(`Upstream Last-Modified: ${status.last_modified_header}`);
+            if (status.last_error) parts.push(`Last error: ${status.last_error}`);
+            el.title = parts.join('\n');
+        }
+
+        // Re-tick the age string every 60s so it stays fresh between pushes.
+        setInterval(() => {
+            if (state.user_db_status) updateUserDbStatus(state.user_db_status);
+        }, 60000);
+
+        function updateLastHeard(users) {
+            const tbody = document.getElementById('lastHeardTable');
+            
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 20px; text-align: center; color: #9ca3af;">
+                            No users heard yet
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Build id-keyed lookup for translation check (state.repeaters is an array).
+            const repeaterList = Array.isArray(state.repeaters) ? state.repeaters : Object.values(state.repeaters || {});
+            const repeaterById = {};
+            repeaterList.forEach(r => { if (r && r.repeater_id != null) repeaterById[r.repeater_id] = r; });
+
+            // Dashboard maintains its own list of last 10 users
+            tbody.innerHTML = users.map(user => {
+                const lastHeardDate = new Date(user.last_heard * 1000);
+                const now = Date.now();
+                const elapsed = Math.floor((now - lastHeardDate) / 1000);
+                
+                let timeDisplay;
+                if (user.active) {
+                    // Stream is currently active - show badge
+                    timeDisplay = '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Active</span>';
+                } else if (elapsed < 60) {
+                    timeDisplay = `${elapsed}s ago`;
+                } else if (elapsed < 3600) {
+                    timeDisplay = `${Math.floor(elapsed / 60)}m ago`;
+                } else {
+                    // For times over an hour, check if it's today
+                    const today = new Date();
+                    const isToday = lastHeardDate.toDateString() === today.toDateString();
+                    
+                    if (isToday) {
+                        // Same day - show time only
+                        timeDisplay = lastHeardDate.toLocaleTimeString();
+                    } else {
+                        // Different day - show date and time
+                        const options = { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            hour: 'numeric', 
+                            minute: '2-digit',
+                            hour12: true
+                        };
+                        timeDisplay = lastHeardDate.toLocaleDateString('en-US', options);
+                    }
+                }
+                
+                const callsign = user.callsign || '-';
+                // Use source_name if available, fall back to repeater_id for backward compatibility.
+                // Flag only if THIS specific transmission's (slot, talkgroup) matched a translation rule
+                // on the source repeater — not just "source has any rules".
+                const srcRepeater = user.source_repeater_id != null ? repeaterById[user.source_repeater_id] : null;
+                const xlate = srcRepeater && Array.isArray(srcRepeater.translations)
+                    ? srcRepeater.translations.find(t => t[0] === user.slot && t[1] === user.talkgroup)
+                    : null;
+                const srcXlateEmoji = xlate
+                    ? ` <span title="Translated: RF TS${xlate[0]}/TG${xlate[1]} ↔ Net TS${xlate[2]}/TG${xlate[3]}">🔀</span>`
+                    : '';
+                const source = (user.source_name || user.repeater_id || '-') + srcXlateEmoji;
+
+                // Destination rendering composes two dimensions so both are
+                // visible at a glance:
+                //   addressing:  👥 group  /  👤 unit (private)
+                //   payload:     🎤 voice  /  📟 data (not forwarded)
+                // 📟 (pager) carries the strongest semantic tie to what DMR
+                // data actually is — short text/GPS bursts over radio.
+                const isUnit = user.call_type === 'private';
+                const isData = !!user.is_data;
+                const addrEmoji = isUnit
+                    ? '<span title="Unit (private) call">👤</span>'
+                    : '<span title="Group call">👥</span>';
+                const payloadEmoji = isData
+                    ? '<span title="Data call (not forwarded)">📟</span>'
+                    : '<span title="Voice call">🎤</span>';
+                const destination = `${addrEmoji}${payloadEmoji} ${user.talkgroup}`;
+
+                return `
+                    <tr style="border-bottom: 1px solid #374151;">
+                        <td style="padding: 8px;">${user.radio_id}</td>
+                        <td style="padding: 8px; font-weight: 500; color: ${user.callsign ? 'white' : '#6b7280'};">${callsign}</td>
+                        <td style="padding: 8px;">${source}</td>
+                        <td style="padding: 8px; text-align: center;">${user.slot}</td>
+                        <td style="padding: 8px;">${destination}</td>
+                        <td style="padding: 8px; color: ${user.active ? '' : '#9ca3af'};">${timeDisplay}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function processEventUpdate(event) {
+            // Update last_heard if included in event
+            if (event.last_heard) {
+                state.last_heard = event.last_heard;
+                updateLastHeard(state.last_heard);
+            }
+            
+            // Update local state immediately based on event type
+            const eventType = event.type;
+            const data = event.data;
+            
+            switch(eventType) {
+                case 'stream_start':
+                    // Add or replace stream in state immediately with fresh start_time
+                    // Handle both repeater and outbound streams
+                    const connection_type = data.connection_type || 'repeater';
+                    let startStreamIndex;
+
+                    if (connection_type === 'outbound') {
+                        startStreamIndex = state.streams.findIndex(s =>
+                            s.connection_type === 'outbound' &&
+                            s.connection_name === data.connection_name &&
+                            s.slot === data.slot
+                        );
+                    } else {
+                        startStreamIndex = state.streams.findIndex(s =>
+                            s.repeater_id == data.repeater_id && s.slot == data.slot
+                        );
+                    }
+
+                    const newStream = {
+                        ...data,
+                        status: 'active',
+                        start_time: event.timestamp  // Use fresh timestamp from event
+                    };
+                    if (startStreamIndex >= 0) {
+                        state.streams[startStreamIndex] = newStream;
+                    } else {
+                        state.streams.push(newStream);
+                    }
+
+                    // Data calls: start/refresh the 3s persistence timer so
+                    // the gold DATA pill stays visible long enough to read.
+                    // Voice calls: clear any lingering data timer for this
+                    // slot (a real voice transmission supersedes).
+                    {
+                        const persistConnId = connection_type === 'outbound'
+                            ? data.connection_name : data.repeater_id;
+                        const persistKey = dataPersistKey(connection_type, persistConnId, data.slot);
+                        if (data.is_data) {
+                            scheduleDataPersistDrop(persistKey, connection_type, (s) => {
+                                if (connection_type === 'outbound') {
+                                    return s.connection_type === 'outbound'
+                                        && s.connection_name === data.connection_name
+                                        && Number(s.slot) === Number(data.slot);
+                                }
+                                return s.repeater_id == data.repeater_id
+                                    && Number(s.slot) === Number(data.slot);
+                            });
+                        } else {
+                            clearDataPersist(persistKey);
+                        }
+                    }
+
+                    // Immediately update the display
+                    if (connection_type === 'outbound') {
+                        updateOutbounds(state.outbounds);
+                    } else if (state.repeaters) {
+                        updateRepeaters(state.repeaters);
+                    }
+                    // Update last heard display
+                    updateLastHeard(state.last_heard);
+                    break;
+                    
+                case 'stream_end':
+                    // Update stream status to hang_time
+                    const endConnectionType = data.connection_type || 'repeater';
+                    const endStreamIndex = state.streams.findIndex(s => {
+                        if (endConnectionType === 'outbound') {
+                            return s.connection_type === 'outbound' &&
+                                   s.connection_name === data.connection_name &&
+                                   Number(s.slot) === Number(data.slot);
+                        }
+                        return s.repeater_id == data.repeater_id && Number(s.slot) === Number(data.slot);
+                    });
+                    if (endStreamIndex >= 0) {
+                        const existingStream = state.streams[endStreamIndex];
+                        // Data streams: do not transition to hang_time. The
+                        // persistence timer controls DATA pill lifetime; a
+                        // mid-persistence hang_time flip would just cause a
+                        // hang-time rendering to flash before the timer drops
+                        // the stream. Let the timer handle removal.
+                        if (!existingStream.is_data) {
+                            existingStream.status = 'hang_time';
+                            existingStream.hang_time = data.hang_time !== undefined ? data.hang_time : 0;
+                            const packetCount = (data.packet_count !== undefined) ? data.packet_count :
+                                (data.packets !== undefined ? data.packets : (existingStream.packets !== undefined ? existingStream.packets : 0));
+                            existingStream.packets = packetCount;
+                            existingStream.duration = data.duration;
+                            existingStream.end_reason = data.end_reason || data.reason || existingStream.end_reason || 'unknown';
+                        }
+                    }
+                    // Immediately update the display
+                    if (endConnectionType === 'outbound') {
+                        const outboundList = Array.isArray(state.outbounds) ? state.outbounds : Object.values(state.outbounds || {});
+                        updateOutbounds(outboundList);
+                    } else if (state.repeaters) {
+                        updateRepeaters(state.repeaters);
+                        // Update last heard display for repeater RX streams
+                        updateLastHeard(state.last_heard);
+                    }
+                    break;
+                    
+                case 'hang_time_expired':
+                    // Remove the stream from state
+                    const hangConnectionType = data.connection_type || 'repeater';
+                    state.streams = state.streams.filter(s => {
+                        if (hangConnectionType === 'outbound') {
+                            return !(s.connection_type === 'outbound' &&
+                                     s.connection_name === data.connection_name &&
+                                     Number(s.slot) === Number(data.slot));
+                        }
+                        return !(s.repeater_id == data.repeater_id && Number(s.slot) === Number(data.slot));
+                    });
+                    // Immediately update the display
+                    if (hangConnectionType === 'outbound') {
+                        const outboundList = Array.isArray(state.outbounds) ? state.outbounds : Object.values(state.outbounds || {});
+                        updateOutbounds(outboundList);
+                    } else if (state.repeaters) {
+                        updateRepeaters(state.repeaters);
+                        // Also update last heard display for repeater RX streams
+                        updateLastHeard(state.last_heard);
+                    }
+                    break;
+                    
+
+                    
+                case 'repeater_connected':
+                    // Update repeater info (especially missed_pings for yellow warning indicator)
+                    if (state.repeaters && data.repeater_id) {
+                        const repeaterIndex = state.repeaters.findIndex(r => r.repeater_id == data.repeater_id);
+                        if (repeaterIndex >= 0) {
+                            const oldMissedPings = state.repeaters[repeaterIndex].missed_pings || 0;
+                            const newMissedPings = data.missed_pings !== undefined ? data.missed_pings : 0;
+                            
+                            // Update the repeater data while preserving other fields
+                            state.repeaters[repeaterIndex] = {
+                                ...state.repeaters[repeaterIndex],
+                                ...data,
+                                last_ping: data.last_ping || state.repeaters[repeaterIndex].last_ping,
+                                missed_pings: newMissedPings
+                            };
+                            
+                            // Play appropriate tone based on missed_pings change
+                            if (oldMissedPings === 0 && newMissedPings > 0) {
+                                // Repeater just missed a ping (blue -> yellow)
+                                playAlertTone();
+                            } else if (oldMissedPings > 0 && newMissedPings === 0) {
+                                // Ping restored (yellow -> blue)
+                                playConnectTone();
+                            }
+                            
+                            // Immediately refresh the display to update yellow warning
+                            updateRepeaters(state.repeaters);
+                        } else {
+                            // New repeater connection
+                            playConnectTone();
+                        }
+                    }
+                    break;
+                
+                case 'repeater_details':
+                    // Store detailed repeater information (sent once on connection)
+                    if (data.repeater_id) {
+                        state.repeater_details[data.repeater_id] = data;
+                    }
+                    break;
+                    
+                case 'repeater_disconnected':
+                    // Remove repeater from state immediately
+                    if (state.repeaters && state.repeaters[data.repeater_id]) {
+                        playDisconnectTone();
+                        delete state.repeaters[data.repeater_id];
+                        // Remove from DOM immediately
+                        const repeaterCard = document.querySelector(`[data-repeater-id="${data.repeater_id}"]`);
+                        if (repeaterCard) {
+                            repeaterCard.remove();
+                        }
+                        // Also clean up any streams from this repeater
+                        state.streams = state.streams.filter(s => s.repeater_id != data.repeater_id);
+                        // Update stats
+                        updateStats(state.stats, state.repeaters, state.streams);
+                    }
+                    break;
+                
+                case 'outbound_connected':
+                    // Add/update outbound connection
+                    const outboundIdx = state.outbounds.findIndex(o => o.connection_name === data.connection_name);
+                    if (outboundIdx >= 0) {
+                        state.outbounds[outboundIdx] = { ...data, status: 'connected' };
+                    } else {
+                        state.outbounds.push({ ...data, status: 'connected' });
+                    }
+                    updateOutbounds(state.outbounds);
+                    playConnectTone();
+                    break;
+                
+                case 'outbound_connecting':
+                    // Outbound connection is attempting to connect
+                    const connectingIdx = state.outbounds.findIndex(o => o.connection_name === data.connection_name);
+                    if (connectingIdx >= 0) {
+                        state.outbounds[connectingIdx] = { ...data, status: 'connecting' };
+                    } else {
+                        state.outbounds.push({ ...data, status: 'connecting' });
+                    }
+                    updateOutbounds(state.outbounds);
+                    break;
+                
+                case 'outbound_disconnected':
+                    // Update outbound connection to disconnected (don't remove)
+                    const disconnectIdx = state.outbounds.findIndex(o => o.connection_name === data.connection_name);
+                    if (disconnectIdx >= 0) {
+                        state.outbounds[disconnectIdx] = { ...state.outbounds[disconnectIdx], ...data, status: 'disconnected' };
+                        updateOutbounds(state.outbounds);
+                        playDisconnectTone();
+                    }
+                    break;
+                
+                case 'outbound_error':
+                    // Update outbound connection error status
+                    const errorIdx = state.outbounds.findIndex(o => o.connection_name === data.connection_name);
+                    if (errorIdx >= 0) {
+                        state.outbounds[errorIdx] = { ...state.outbounds[errorIdx], ...data, status: 'error' };
+                    } else {
+                        state.outbounds.push({ ...data, status: 'error' });
+                    }
+                    updateOutbounds(state.outbounds);
+                    playAlertTone();
+                    break;
+            }
+        }
+        
+        function formatEventData(type, data) {
+            switch(type) {
+                case 'repeater_connected':
+                    return `Repeater ${data.radio_id} (${data.callsign || 'UNKNOWN'}) connected from ${data.address}`;
+                case 'repeater_disconnected':
+                    return `Repeater ${data.repeater_id} (${data.callsign || 'UNKNOWN'}) disconnected - ${data.reason || 'unknown reason'}`;
+                case 'stream_start':
+                    return `Stream started: ${data.src_id} → TG ${data.dst_id} on repeater ${data.repeater_id} slot ${data.slot}`;
+                case 'stream_update':
+                    return `Stream update: ${data.packets} packets, ${data.duration}s`;
+                case 'stream_end':
+                    const endReason = data.end_reason || data.reason || 'unknown';
+                    const hangTime = data.hang_time ? `, entering hang time (${data.hang_time}s)` : '';
+                    return `Stream ended (${endReason}): ${data.packets} packets, ${data.duration}s${hangTime}`;
+                case 'hang_time_expired':
+                    return `Hang time expired: Repeater ${data.repeater_id} slot ${data.slot}`;
+                default:
+                    return JSON.stringify(data);
+            }
+        }
+        
+        function handleEvent(event) {
+            // Re-fetch state and update local state object
+            fetch('/api/repeaters').then(r => r.json()).then(data => {
+                state.repeaters = data.repeaters;
+                updateRepeaters(data.repeaters);
+            });
+            fetch('/api/streams').then(r => r.json()).then(data => {
+                state.streams = data.streams;
+                updateStreams(data.streams);
+            });
+            fetch('/api/events?limit=10').then(r => r.json()).then(data => {
+                state.events = data.events;
+                updateEvents(data.events);
+            });
+            fetch('/api/stats').then(r => r.json()).then(data => {
+                state.stats = data.stats;
+                // Compute total connections: inbound repeaters + connected outbounds
+                const outboundList = Array.isArray(state.outbounds) ? state.outbounds : Object.values(state.outbounds || {});
+                const outboundConnected = outboundList.filter(o => o.status === 'connected').length;
+                document.getElementById('statConnections').textContent = data.repeaters_connected + outboundConnected;
+                document.getElementById('statStreams').textContent = data.active_streams;
+                document.getElementById('statTotalCalls').textContent = data.stats.total_calls_today.toLocaleString();
+                document.getElementById('statRetransmittedCalls').textContent = data.stats.retransmitted_calls.toLocaleString();
+                document.getElementById('statTotalDuration').textContent = formatDuration(data.stats.total_duration_today || 0);
+            });
+        }
+        
+        // Update active stream durations and connection durations every second (without re-rendering everything)
+        setInterval(() => {
+            // Update stream durations
+            document.querySelectorAll('[data-stream-duration]').forEach(el => {
+                const status = el.dataset.status;
+                const startTime = parseFloat(el.dataset.startTime);
+                const finalDuration = parseFloat(el.dataset.finalDuration);
+                
+                if (status === 'active' && startTime) {
+                    const elapsed = Date.now() / 1000 - startTime;
+                    // Only update if elapsed time is reasonable (between 0 and 10 minutes)
+                    // This prevents showing huge elapsed times when old data hasn't been cleared yet
+                    if (elapsed >= 0 && elapsed < 600) {
+                        el.textContent = Math.round(elapsed) + 's';
+                    }
+                } else if (finalDuration && status !== 'active') {
+                    // For ended/hang_time streams, show final duration (don't let timer run)
+                    if (!el.textContent.startsWith(Math.round(finalDuration) + 's')) {
+                        el.textContent = Math.round(finalDuration) + 's';
+                    }
+                }
+            });
+            
+            // Update connection durations
+            document.querySelectorAll('[data-connected-duration]').forEach(el => {
+                const connectedAt = parseFloat(el.dataset.connectedAt);
+                if (connectedAt) {
+                    const elapsed = Date.now() / 1000 - connectedAt;
+                    el.textContent = formatDuration(elapsed);
+                }
+            });
+        }, 1000);
+        
+        // Keep connection alive
+        setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send('ping');
+            }
+        }, 30000);
+        
+        // Add click handlers to status badges
+        document.getElementById('wsStatus').addEventListener('click', () => {
+            const el = document.getElementById('wsStatus');
+            if (el.classList.contains('disconnected')) {
+                // Try to reconnect WebSocket immediately
+                if (reconnectTimeout) {
+                    clearTimeout(reconnectTimeout);
+                    reconnectTimeout = null;
+                }
+                if (ws) {
+                    ws.close();
+                }
+                connectWebSocket();
+            } else {
+                // Reload page when connected
+                location.reload();
+            }
+        });
+        
+        // HBlink4 badge is not clickable - it's just a status indicator
+        // Users can't control the server-side connection from the browser
+        
+        // Set up audio toggle button
+        document.getElementById('audioToggle').addEventListener('click', toggleAudio);
+        updateAudioToggle();
+        
+        // Initialize dashboard
+        loadConfig();
+        connectWebSocket();
+    </script>
+</body>
+</html>
