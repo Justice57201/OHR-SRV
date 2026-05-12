@@ -3,8 +3,8 @@
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/Justice57201/HBlink.git
-cd /opt/HBlink
+git clone https://github.com/Justice57201/HBlink4.git
+cd /opt/HBlink4
 ```
 2. Open the directory.
 ```bash
