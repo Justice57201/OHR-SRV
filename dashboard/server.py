@@ -70,7 +70,7 @@ def load_config() -> dict:
             },
             "fallback": {
                 "keep_stale_on_failure": True,
-                "min_rows_required": 1000
+                "min_rows_required": 1
             }
         }
     }
