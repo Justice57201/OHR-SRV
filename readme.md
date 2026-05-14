@@ -75,7 +75,7 @@ Save and restart SSH:
 sudo systemctl restart ssh
 ```
 
-# Done
+## Done
 
 
 # Installation
