@@ -24,8 +24,6 @@ pip install -r requirements.txt
 Copy the sample configuration file and modify it for your needs:
 ```bash
 cp config/config_sample.json config/config.json
-```
-```bash
 cp dashboard/config_sample.json dashboard/config.json
 ```
 
