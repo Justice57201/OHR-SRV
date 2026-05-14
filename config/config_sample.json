@@ -2,7 +2,7 @@
     "global": {
         "max_missed": 3,
         "timeout_duration": 30,
-        "disable_ipv6": false,
+        "disable_ipv6": true,
         "bind_ipv4": "0.0.0.0",
         "bind_ipv6": "::",
         "port_ipv4": 62031,
