@@ -77,7 +77,8 @@ sudo systemctl restart ssh
 
 # Done
 
-## Installation
+
+# Installation
 
 1. Clone this repository:
 ```bash
