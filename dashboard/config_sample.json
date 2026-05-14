@@ -1,7 +1,7 @@
 {
     "server_name": "HBlink4 Server",
     "server_description": "Amateur Radio DMR Network",
-    "dashboard_title": "HBlink4 Dashboard",
+    "dashboard_title": "Outlaw Ham Radio",
     "announcement": {
         "enabled": false,
         "text": ""
@@ -24,8 +24,7 @@
     },
     "user_database": {
         "enabled": true,
-        "source_url": "https://database.radioid.net/static/user.csv",
-        "user_agent": "HBlink4-Dashboard (+https://github.com/n0mjs710/HBlink4; contact=operator@example.org)",
+        "source_url": "https://gmrs-link.com/ohr/hblink/user.csv",
         "refresh": {
             "schedule": "daily",
             "time_of_day": "03:17",
@@ -39,7 +38,7 @@
         },
         "fallback": {
             "keep_stale_on_failure": true,
-            "min_rows_required": 1000
+            "min_rows_required": 1
         }
     }
 }
