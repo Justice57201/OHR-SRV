@@ -1,5 +1,3 @@
-## Debian Prep
-
 # Enable Root User Login on Debian
 
 ## 1. Set a Root Password
