@@ -1,3 +1,83 @@
+## Debian Prep
+
+# Enable Root User Login on Debian
+
+## 1. Set a Root Password
+
+To enable the root account:
+
+```bash
+sudo passwd root
+```
+
+You will be prompted:
+
+```text
+Enter new password:
+Retype new password:
+```
+
+Example output:
+
+```text
+passwd: password updated successfully
+```
+
+This unlocks the root account.
+
+---
+
+## 2. Switch to Root
+
+Test the account:
+
+```bash
+su -
+```
+
+Enter the root password.
+
+Prompt changes from:
+
+```bash
+user@debian:~$
+```
+
+to:
+
+```bash
+root@debian:~#
+```
+
+---
+
+## 3. Enable SSH Root Login
+
+Edit the SSH server configuration:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Find:
+
+```text
+PermitRootLogin prohibit-password
+```
+
+Change to:
+
+```text
+PermitRootLogin yes
+```
+
+Save and restart SSH:
+
+```bash
+sudo systemctl restart ssh
+```
+
+# Done
 
 ## Installation
 
